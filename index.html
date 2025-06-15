@@ -1,15 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>E-Commerce Frontend</title>
-    <link rel="stylesheet" href="styles/main.css">
-</head>
-<body>
-    <header>
-        <h1>Welcome to Our Online Store</h1>
+    <link rel="stylesheet" href="styles/main.min.css" />
+
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="logo">MyStore</div>
+
+      <nav class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Products</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+
+      <div class="header-right">
+        <input
+          type="text"
+          placeholder="Search products..."
+          class="search-bar"
+        />
+
+        <a href="cart.html" class="cart-icon" style="text-decoration: none; color: inherit;">
+  🛒
+  <span class="badge">0</span>
+</a>
+
+
+        <div class="hamburger" id="hamburger">☰</div>
+      </div>
+      <div id="welcomeMessage" style="margin-left: 10px;"></div>
+
     </header>
-    <script src="scripts/app.js"></script>
-</body>
+
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="fade-in">Biggest Sale of the Year!</h1>
+        <p class="fade-in">Up to 50% off on selected products</p>
+        <a href="#products" class="cta-button fade-in">Shop Now</a>
+      </div>
+    </section>
+    <section id="products" class="product-grid-container">
+      <h2>Our Products</h2>
+      <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <script src="styles/scripts/app.min.js" defer></script>
+
+
+    <script>
+  const user = JSON.parse(localStorage.getItem('user'));
+  const welcomeEl = document.getElementById('welcomeMessage');
+
+  if (user && user.name) {
+    welcomeEl.textContent = `👋 Welcome, ${user.name}`;
+  }
+</script>
+
+<!-- Firebase SDKs (required to detect auth) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDYEBsY9FekBCO0T6fMJPX4yuF6h9RxD4",
+    authDomain: "mystore-387ad.firebaseapp.com",
+    projectId: "mystore-387ad",
+    storageBucket: "mystore-387ad.firebasestorage.app",
+    messagingSenderId: "940155500689",
+    appId: "1:940155500689:web:1bfbee652e777bfe08a730",
+    measurementId: "G-5JW2S2SYT0"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged((user) => {
+    const nav = document.querySelector(".nav-links");
+
+    if (user) {
+      // ✅ Show welcome message
+      const welcome = document.createElement("span");
+      welcome.textContent = `👋 Welcome, ${user.email}`;
+      welcome.style.marginLeft = "15px";
+      welcome.style.fontWeight = "bold";
+      nav.appendChild(welcome);
+
+      // ✅ Add Logout button
+      const logoutBtn = document.createElement("a");
+      logoutBtn.href = "#";
+      logoutBtn.textContent = "Logout";
+      logoutBtn.onclick = function (e) {
+        e.preventDefault();
+        auth.signOut().then(() => {
+          alert("Logged out!");
+          window.location.reload();
+        });
+      };
+      nav.appendChild(logoutBtn);
+
+      // ✅ Hide Login link if exists
+      const loginLink = Array.from(nav.querySelectorAll("a")).find(link => link.textContent.toLowerCase().includes("login"));
+      if (loginLink) loginLink.style.display = "none";
+    }
+  });
+</script>
+
+
+    
+  </body>
 </html>

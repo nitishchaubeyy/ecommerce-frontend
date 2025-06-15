@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="styles/main.min.css" />
+
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">MyStore</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="product.html">Products</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+    <a href="cart.html" class="cart-icon">
+      🛒
+      <span class="badge">0</span>
+    </a>
+  </header>
+
+  <main class="cart-container">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+
+    <div class="cart-summary">
+      <p>Total: $<span id="cartTotal">0.00</span></p>
+      <button id="checkoutBtn">Proceed to Checkout</button>
+      <a href="index.html" class="continue-link">← Continue Shopping</a>
+    </div>
+  </main>
+
+  <script src="styles/scripts/cart.min.js" defer></script>
+
+  <div id="toast" class="toast-message"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDYEBsY9FekBCO0T6fMJPX4yuF6h9RxD4",
+    authDomain: "mystore-387ad.firebaseapp.com",
+    projectId: "mystore-387ad",
+    storageBucket: "mystore-387ad.firebasestorage.app",
+    messagingSenderId: "940155500689",
+    appId: "1:940155500689:web:1bfbee652e777bfe08a730"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      alert("Please log in to access your cart.");
+      window.location.href = "auth.html";
+    }
+  });
+</script>
+
+</body>
+</html>

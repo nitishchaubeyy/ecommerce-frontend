@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login / Signup</title>
+    <link rel="stylesheet" href="styles/main.min.css" />
+    <style>
+      .auth-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .auth-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .auth-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .auth-container input {
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .toggle-link {
+        text-align: center;
+        margin-top: 10px;
+        color: #007bff;
+        cursor: pointer;
+      }
+
+      .error-message {
+        color: red;
+        font-size: 13px;
+      }
+
+      @media (max-width: 500px) {
+        .auth-container {
+          margin: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="logo">MyStore</div>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="product.html">Products</a>
+        <a href="cart.html">Cart</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="auth-container">
+        <h2 id="formTitle">Login</h2>
+        <form id="authForm">
+          <div id="nameField" style="display: none">
+            <input type="text" id="name" placeholder="Full Name" />
+          </div>
+          <input type="email" id="email" placeholder="Email" required />
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+          />
+          <div id="rememberMeContainer" style="display: block">
+            <label style="font-size: 14px">
+              <input type="checkbox" id="rememberMe" checked />
+              Remember Me
+            </label>
+          </div>
+
+          <div id="confirmPasswordField" style="display: none">
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm Password"
+            />
+          </div>
+          <button type="submit" id="authBtn">Login</button>
+          <p class="error-message" id="errorMsg"></p>
+          <p class="toggle-link" onclick="toggleForm()">
+            Don't have an account? Sign up
+          </p>
+        </form>
+      </div>
+    </main>
+
+    <!-- ✅ Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+    <!-- ✅ Firebase Config & Initialization -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDDYEBsY9FekBCO0T6fMJPX4yuF6h9RxD4",
+        authDomain: "mystore-387ad.firebaseapp.com",
+        projectId: "mystore-387ad",
+        storageBucket: "mystore-387ad.firebasestorage.app",
+        messagingSenderId: "940155500689",
+        appId: "1:940155500689:web:1bfbee652e777bfe08a730",
+        measurementId: "G-5JW2S2SYT0",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+    </script>
+
+    <!-- ✅ Your login/signup logic -->
+    <script>
+      let isLogin = true;
+
+      function toggleForm() {
+        isLogin = !isLogin;
+        document.getElementById("formTitle").textContent = isLogin
+          ? "Login"
+          : "Sign Up";
+        document.getElementById("authBtn").textContent = isLogin
+          ? "Login"
+          : "Sign Up";
+        document.querySelector(".toggle-link").textContent = isLogin
+          ? "Don't have an account? Sign up"
+          : "Already have an account? Login";
+
+        document.getElementById("nameField").style.display = isLogin
+          ? "none"
+          : "block";
+        document.getElementById("confirmPasswordField").style.display = isLogin
+          ? "none"
+          : "block";
+        document.getElementById("errorMsg").textContent = "";
+        document.getElementById('rememberMeContainer').style.display = isLogin ? 'block' : 'none';
+
+      }
+
+      document
+        .getElementById("authForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          const errorMsg = document.getElementById("errorMsg");
+
+          if (!email || !password) {
+            errorMsg.textContent = "Please fill all required fields.";
+            return;
+          }
+
+          if (!email.match(/^\S+@\S+\.\S+$/)) {
+            errorMsg.textContent = "Invalid email format.";
+            return;
+          }
+
+          if (!isLogin) {
+            const name = document.getElementById("name").value.trim();
+            const confirmPassword =
+              document.getElementById("confirmPassword").value;
+
+            if (!name || !confirmPassword) {
+              errorMsg.textContent = "All fields are required.";
+              return;
+            }
+
+            if (password !== confirmPassword) {
+              errorMsg.textContent = "Passwords do not match.";
+              return;
+            }
+
+            // ✅ Firebase Signup
+            auth
+              .createUserWithEmailAndPassword(email, password)
+              .then((userCredential) => {
+                alert("✅ Account created!");
+                toggleForm();
+              })
+              .catch((error) => {
+                errorMsg.textContent = error.message;
+              });
+          } else {
+            // ✅ Firebase Login
+            const remember = document.getElementById("rememberMe").checked;
+            const persistence = remember
+              ? firebase.auth.Auth.Persistence.LOCAL
+              : firebase.auth.Auth.Persistence.SESSION;
+
+            auth
+              .setPersistence(persistence)
+              .then(() => {
+                return auth.signInWithEmailAndPassword(email, password);
+              })
+              .then((userCredential) => {
+                alert("✅ Logged in!");
+                window.location.href = "index.html";
+              })
+              .catch((error) => {
+                errorMsg.textContent = error.message;
+              });
+          }
+        });
+    </script>
+  </body>
+</html>
