@@ -57,7 +57,8 @@
   const welcomeEl = document.getElementById('welcomeMessage');
 
   if (user && user.name) {
-    welcomeEl.textContent = `👋 Welcome, ${user.name}`;
+    welcome.textContent = `👋 Welcome, ${user.displayName || user.email}`;
+
   }
 </script>
 
@@ -83,12 +84,13 @@
     const nav = document.querySelector(".nav-links");
 
     if (user) {
-      // ✅ Show welcome message
-      const welcome = document.createElement("span");
-      welcome.textContent = `👋 Welcome, ${user.email}`;
-      welcome.style.marginLeft = "15px";
-      welcome.style.fontWeight = "bold";
-      nav.appendChild(welcome);
+  const welcome = document.createElement("span");
+  welcome.textContent = `👋 Welcome, ${user.displayName || user.email}`;
+  welcome.style.marginLeft = "15px";
+  welcome.style.fontWeight = "bold";
+  nav.appendChild(welcome);
+
+
 
       // ✅ Add Logout button
       const logoutBtn = document.createElement("a");

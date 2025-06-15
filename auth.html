@@ -140,8 +140,9 @@
           ? "none"
           : "block";
         document.getElementById("errorMsg").textContent = "";
-        document.getElementById('rememberMeContainer').style.display = isLogin ? 'block' : 'none';
-
+        document.getElementById("rememberMeContainer").style.display = isLogin
+          ? "block"
+          : "none";
       }
 
       document
@@ -182,8 +183,13 @@
             auth
               .createUserWithEmailAndPassword(email, password)
               .then((userCredential) => {
+                return userCredential.user.updateProfile({
+                  displayName: name, // 👈 this stores full name
+                });
+              })
+              .then(() => {
                 alert("✅ Account created!");
-                toggleForm();
+                toggleForm(); // switch back to login form
               })
               .catch((error) => {
                 errorMsg.textContent = error.message;
